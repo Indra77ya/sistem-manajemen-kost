@@ -10,12 +10,15 @@ use App\Models\User;
 
 class BranchScope implements Scope
 {
+    protected static $branchIdsCache = [];
+
     /**
      * Apply the scope to a given Eloquent query builder.
      */
     public function apply(Builder $builder, Model $model): void
     {
-        if (Auth::check()) {
+        // Use hasUser() to avoid triggering auth logic recursively
+        if (Auth::hasUser()) {
             $user = Auth::user();
 
             // Developer and Owner can see everything
@@ -25,16 +28,18 @@ class BranchScope implements Scope
 
             // Admin can only see data from branches they are assigned to
             if ($user->role === User::ROLE_ADMIN) {
-                $branchIds = $user->branches->pluck('id')->toArray();
+                $branchIds = $this->getBranchIds($user);
 
                 if ($model instanceof \App\Models\Branch) {
-                    $builder->whereIn('id', $branchIds);
+                    $builder->whereIn($model->getTable() . '.id', $branchIds);
                 } elseif ($model instanceof \App\Models\User) {
-                    $builder->whereHas('branches', function ($query) use ($branchIds) {
-                        $query->whereIn('branches.id', $branchIds);
-                    })->orWhere('id', $user->id);
+                    $builder->where(function ($query) use ($branchIds, $user) {
+                        $query->whereHas('branches', function ($q) use ($branchIds) {
+                            $q->withoutGlobalScopes()->whereIn('branches.id', $branchIds);
+                        })->orWhere($model->getTable() . '.id', $user->id);
+                    });
                 } else {
-                    $builder->whereIn('branch_id', $branchIds);
+                    $builder->whereIn($model->getTable() . '.branch_id', $branchIds);
                 }
             }
 
@@ -64,5 +69,17 @@ class BranchScope implements Scope
                 }
             }
         }
+    }
+
+    protected function getBranchIds(User $user): array
+    {
+        if (!isset(static::$branchIdsCache[$user->id])) {
+            static::$branchIdsCache[$user->id] = $user->branches()
+                ->withoutGlobalScopes()
+                ->pluck('branches.id')
+                ->toArray();
+        }
+
+        return static::$branchIdsCache[$user->id];
     }
 }
