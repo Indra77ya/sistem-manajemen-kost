@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BranchScope implements Scope
 {
@@ -13,12 +14,18 @@ class BranchScope implements Scope
     {
         $user = Auth::user();
 
+        // Developer and Owner can see everything
         if (!$user || $user->role === 'developer' || $user->role === 'owner') {
             return;
         }
 
         if ($user->role === 'admin') {
-            $branchIds = $user->branches()->pluck('branches.id')->toArray();
+            // Use DB table directly to avoid recursion through models
+            $branchIds = DB::table('branch_user')
+                ->where('user_id', $user->id)
+                ->pluck('branch_id')
+                ->toArray();
+
             if (empty($branchIds) && $user->branch_id) {
                 $branchIds = [$user->branch_id];
             }
