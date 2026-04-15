@@ -24,7 +24,7 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - PHP >= 8.2
 - Composer
 - Node.js & NPM
-- SQLite (atau database lain yang didukung Laravel)
+- MySQL >= 8.0
 
 ## Instalasi Lokal
 
@@ -44,11 +44,11 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
    cp .env.example .env
    php artisan key:generate
    ```
-   *Pastikan `DB_CONNECTION` diset ke `sqlite` (default di lingkungan ini).*
+   *Pastikan konfigurasi `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` sesuai dengan server MySQL lokal Anda.*
 
 4. **Persiapan Database:**
+   Buat database baru di MySQL (misal: `kost_db`), lalu jalankan:
    ```bash
-   touch database/database.sqlite
    php artisan migrate --seed
    ```
 
