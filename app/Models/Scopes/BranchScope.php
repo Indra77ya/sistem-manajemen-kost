@@ -10,9 +10,21 @@ use Illuminate\Support\Facades\DB;
 
 class BranchScope implements Scope
 {
+    /**
+     * Flag to prevent infinite recursion when resolving the authenticated user.
+     */
+    protected static $isResolvingUser = false;
+
     public function apply(Builder $builder, Model $model): void
     {
+        // Prevent recursion when loading the authenticated user
+        if (static::$isResolvingUser) {
+            return;
+        }
+
+        static::$isResolvingUser = true;
         $user = Auth::user();
+        static::$isResolvingUser = false;
 
         // Developer and Owner can see everything
         if (!$user || $user->role === 'developer' || $user->role === 'owner') {
@@ -20,7 +32,7 @@ class BranchScope implements Scope
         }
 
         if ($user->role === 'admin') {
-            // Use DB table directly to avoid recursion through models
+            // Use DB table directly to avoid recursion through Eloquent relationships
             $branchIds = DB::table('branch_user')
                 ->where('user_id', $user->id)
                 ->pluck('branch_id')
