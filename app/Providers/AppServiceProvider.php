@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Payment;
+use App\Observers\PaymentObserver;
+use App\Models\Lease;
+use App\Observers\LeaseObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Payment::observe(PaymentObserver::class);
+        Lease::observe(LeaseObserver::class);
     }
 }
