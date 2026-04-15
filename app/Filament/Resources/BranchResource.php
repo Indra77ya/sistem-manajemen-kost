@@ -29,11 +29,40 @@ class BranchResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required(),
-                Forms\Components\TextInput::make('address'),
-                Forms\Components\TextInput::make('phone')
-                    ->tel(),
+                Forms\Components\Section::make('Informasi Cabang')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nama Cabang')
+                            ->required(),
+                        Forms\Components\TextInput::make('address')
+                            ->label('Alamat'),
+                        Forms\Components\TextInput::make('phone')
+                            ->label('Telepon')
+                            ->tel(),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Konfigurasi Denda')
+                    ->schema([
+                        Forms\Components\Select::make('penalty_type')
+                            ->label('Tipe Denda')
+                            ->options([
+                                'none' => 'Tanpa Denda',
+                                'flat' => 'Flat (Sekali saja)',
+                                'daily' => 'Harian (Bertambah setiap hari)',
+                            ])
+                            ->required()
+                            ->default('none'),
+                        Forms\Components\TextInput::make('penalty_amount')
+                            ->label('Nilai Denda')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->default(0),
+                        Forms\Components\TextInput::make('penalty_grace_period')
+                            ->label('Masa Tenggang (Hari)')
+                            ->helperText('Denda akan muncul setelah X hari dari jatuh tempo')
+                            ->numeric()
+                            ->default(0),
+                    ])->columns(3),
             ]);
     }
 
@@ -47,6 +76,9 @@ class BranchResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('penalty_type')
+                    ->label('Tipe Denda')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -73,6 +105,7 @@ class BranchResource extends Resource
     {
         return [
             RelationManagers\UsersRelationManager::class,
+            RelationManagers\ServicesRelationManager::class,
         ];
     }
 
