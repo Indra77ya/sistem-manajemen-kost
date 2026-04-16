@@ -9,6 +9,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\Inventory;
 
 class InventoriesRelationManager extends RelationManager
 {
@@ -18,10 +19,20 @@ class InventoriesRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('asset_id')
+                    ->label('Nama Barang (Pilih dari Master)')
+                    ->relationship('asset', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(fn (Forms\Set $set, ?string $state) =>
+                        $set('name', \App\Models\Asset::find($state)?->name)
+                    ),
                 Forms\Components\TextInput::make('name')
-                    ->label('Nama Barang')
+                    ->label('Nama Display (Manual)')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Akan otomatis terisi jika memilih dari Master.'),
                 Forms\Components\Select::make('condition')
                     ->label('Kondisi')
                     ->options([
@@ -50,6 +61,7 @@ class InventoriesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Barang')
+                    ->description(fn (Inventory $record) => $record->asset?->brand ? "Merk: {$record->asset->brand}" : null)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('condition')
                     ->label('Kondisi')
