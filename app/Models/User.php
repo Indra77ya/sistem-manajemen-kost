@@ -74,21 +74,21 @@ class User extends Authenticatable implements FilamentUser
 
     public function isDeveloper(): bool
     {
-        return $this->role === self::ROLE_DEVELOPER;
+        return $this->hasRole('super_admin');
     }
 
     public function isOwner(): bool
     {
-        return $this->role === self::ROLE_OWNER;
+        return $this->hasRole('owner');
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->hasRole('admin_cabang');
     }
 
     public function isTenant(): bool
     {
-        return $this->role === self::ROLE_TENANT;
+        return $this->hasRole('tenant');
     }
 }

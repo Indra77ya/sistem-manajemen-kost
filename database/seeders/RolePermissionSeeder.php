@@ -39,7 +39,9 @@ class RolePermissionSeeder extends Seeder
             }
         });
 
-        // Note: Actual permission assignments for each role can be done via Shield UI
-        // by the Owner/Developer as requested.
+        // 3. Auto-assign all generated permissions to super_admin and owner
+        $allPermissions = Permission::all();
+        $superAdmin->syncPermissions($allPermissions);
+        $owner->syncPermissions($allPermissions);
     }
 }

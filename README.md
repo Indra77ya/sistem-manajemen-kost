@@ -18,6 +18,14 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - **Dashboard & Statistik (Reporting):** Visualisasi data real-time untuk owner dan admin, termasuk grafik pendapatan bulanan, diagram okupansi kamar, dan widget daftar tunggakan.
 - **Dynamic RBAC (Role-Based Access Control):** Pengelolaan role dan izin yang fleksibel menggunakan Filament Shield. Owner dan Developer dapat membuat role baru dan mengatur hak akses spesifik per menu dan aksi.
 
+## Instruksi Pembaruan Sistem (PENTING)
+Jika Anda baru saja menarik (pull) perubahan terbaru, jalankan perintah berikut untuk memperbarui struktur database dan sistem keamanan:
+```bash
+php artisan migrate
+php artisan shield:generate --all --panel=admin
+php artisan db:seed --class=RolePermissionSeeder
+```
+
 ## Fitur Utama Modul Sewa & Tagihan
 - **Itemized Invoicing:** Setiap tagihan merinci biaya sewa, deposit, layanan tambahan, dan denda secara transparan.
 - **Otomasi Tagihan:** Sistem secara otomatis menerbitkan invoice bulanan berdasarkan tanggal tagihan yang ditentukan di kontrak sewa.
