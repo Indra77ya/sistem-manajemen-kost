@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
     const ROLE_DEVELOPER = 'developer';
     const ROLE_OWNER = 'owner';
     const ROLE_ADMIN = 'admin';
+    const ROLE_TECHNICIAN = 'technician';
     const ROLE_TENANT = 'tenant';
 
     /**

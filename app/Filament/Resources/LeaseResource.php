@@ -149,14 +149,28 @@ class LeaseResource extends Resource
                     ->modalDescription('Sistem akan menghitung penyelesaian deposit dan menaikkan status sewa menjadi Selesai.')
                     ->action(function (Lease $record) {
                         $unpaidAmount = $record->invoices()->where('status', '!=', 'paid')->sum('amount');
-                        $refundAmount = $record->deposit_amount - $unpaidAmount;
+
+                        // Calculate maintenance costs charged to tenant
+                        $maintenanceCosts = \App\Models\MaintenanceRequest::where('room_id', $record->room_id)
+                            ->where('user_id', $record->user_id)
+                            ->where('is_charged_to_tenant', true)
+                            ->where('status', 'resolved')
+                            ->sum('total_cost');
+
+                        $refundAmount = $record->deposit_amount - $unpaidAmount - $maintenanceCosts;
 
                         $record->update(['status' => 'completed', 'end_date' => now()]);
                         $record->room->update(['status' => 'available']);
 
+                        $body = "Sewa selesai. ";
+                        if ($maintenanceCosts > 0) {
+                            $body .= "Biaya perbaikan: Rp " . number_format($maintenanceCosts, 0, ',', '.') . ". ";
+                        }
+                        $body .= "Sisa deposit yang harus dikembalikan: Rp " . number_format($refundAmount, 0, ',', '.');
+
                         Notification::make()
                             ->title('Check-out Berhasil')
-                            ->body("Sewa selesai. Sisa deposit yang harus dikembalikan: Rp " . number_format($refundAmount, 0, ',', '.'))
+                            ->body($body)
                             ->success()
                             ->send();
                     }),

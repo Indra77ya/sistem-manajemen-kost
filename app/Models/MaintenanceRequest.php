@@ -11,7 +11,32 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 #[ScopedBy([BranchScope::class])]
 class MaintenanceRequest extends Model
 {
-    protected $fillable = ['branch_id', 'room_id', 'user_id', 'title', 'description', 'priority', 'status'];
+    protected $fillable = [
+        'branch_id',
+        'room_id',
+        'user_id',
+        'technician_id',
+        'title',
+        'description',
+        'priority',
+        'status',
+        'started_at',
+        'resolved_at',
+        'attachment_before',
+        'attachment_after',
+        'total_cost',
+        'is_charged_to_tenant',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'started_at' => 'datetime',
+            'resolved_at' => 'datetime',
+            'total_cost' => 'decimal:2',
+            'is_charged_to_tenant' => 'boolean',
+        ];
+    }
 
     public function branch(): BelongsTo
     {
@@ -26,5 +51,10 @@ class MaintenanceRequest extends Model
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function technician(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'technician_id');
     }
 }

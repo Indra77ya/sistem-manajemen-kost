@@ -13,7 +13,7 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - **Verifikasi Pembayaran:** Konfirmasi manual bukti transfer oleh admin.
 - **Download Invoice PDF:** Fitur unduh invoice dalam format PDF yang aman dan profesional.
 - **Proses Check-out:** Penghitungan otomatis penyelesaian deposit dan status kamar saat penyewa keluar.
-- **Layanan Komplain:** Manajemen laporan kerusakan dari penyewa.
+- **Modul Komplain & Perawatan Profesional:** Manajemen laporan kerusakan lengkap dengan lampiran foto (sebelum/sesudah), penugasan teknisi, pelacakan waktu kerja, dan integrasi biaya perbaikan ke deposit.
 - **Dashboard Statistik:** Ringkasan pendapatan dan ketersediaan kamar.
 
 ## Role Pengguna
@@ -21,7 +21,8 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 1. **Developer:** Akses penuh ke seluruh sistem dan data (tersembunyi dari user lain).
 2. **Owner:** Melihat semua data di seluruh cabang.
 3. **Admin Cabang:** Mengelola data hanya pada cabang yang ditugaskan.
-4. **Penyewa (Tenant):** Melihat tagihan, mengunggah bukti bayar, dan mengunduh invoice PDF mereka sendiri.
+4. **Teknisi (Technician):** Melihat daftar komplain yang ditugaskan, mencatat waktu mulai/selesai kerja, dan mengunggah foto bukti perbaikan.
+5. **Penyewa (Tenant):** Melihat tagihan, mengunggah bukti bayar, melaporkan komplain kerusakan, dan mengunduh invoice PDF mereka sendiri.
 
 ## Persyaratan Sistem
 
@@ -104,9 +105,16 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - Sistem menjalankan `kost:generate-invoices` setiap hari untuk mengecek siapa yang masuk tanggal tagihan.
 - Sistem menjalankan `kost:mark-overdue` untuk menandai tagihan terlambat dan **menerapkan denda** sesuai konfigurasi cabang (Flat atau akumulasi Harian).
 
-### 4. Proses Check-out
+### 4. Modul Komplain & Perbaikan
+- **Penyewa** melaporkan kerusakan melalui menu Komplain dan mengunggah foto awal.
+- **Admin** menugaskan laporan tersebut ke **Teknisi**.
+- **Teknisi** menekan tombol "Mulai Kerja" dan setelah selesai menekan "Selesaikan" sambil mengunggah foto hasil perbaikan serta rincian biaya.
+- **Biaya Perbaikan:** Jika ditandai sebagai tanggung jawab penyewa, biaya ini akan otomatis terkumpul di data sewa.
+
+### 5. Proses Check-out
 - Saat penyewa akan keluar, Admin menggunakan tombol **Check-out** di menu Sewa.
-- Sistem menghitung sisa deposit yang harus dikembalikan (Deposit dikurangi tagihan yang belum lunas).
+- Sistem menghitung sisa deposit yang harus dikembalikan secara akurat:
+  - `Sisa Deposit = (Deposit Awal) - (Tagihan Belum Lunas) - (Biaya Perbaikan yang dibebankan ke penyewa)`.
 - Status kamar otomatis kembali menjadi `Tersedia`.
 
 ## Perintah Khusus
