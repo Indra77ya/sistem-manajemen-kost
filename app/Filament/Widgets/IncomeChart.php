@@ -12,10 +12,13 @@ class IncomeChart extends ChartWidget
 
     protected function getData(): array
     {
+        $connection = DB::connection();
+        $driver = $connection->getDriverName();
+
         $query = Invoice::where('status', 'paid')
             ->whereYear('updated_at', date('Y'));
 
-        if (DB::getDriverName() === 'sqlite') {
+        if ($driver === 'sqlite') {
             $query->select(
                 DB::raw('sum(amount) as total'),
                 DB::raw("strftime('%m', updated_at) as month")

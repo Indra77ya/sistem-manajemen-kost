@@ -42,7 +42,8 @@ class MaintenanceRequestResource extends Resource
                             ->preload()
                             ->live()
                             ->default(fn () => \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->first()?->branch_id)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists()),
+                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists())
+                            ->dehydrated(),
                         Forms\Components\Select::make('room_id')
                             ->label('Kamar')
                             ->relationship('room', 'number', fn (Builder $query, Forms\Get $get) =>
@@ -52,7 +53,8 @@ class MaintenanceRequestResource extends Resource
                             ->searchable()
                             ->preload()
                             ->default(fn () => \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->first()?->room_id)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists()),
+                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists())
+                            ->dehydrated(),
                         Forms\Components\Select::make('user_id')
                             ->label('Penyewa')
                             ->relationship('tenant', 'name', fn (Builder $query) => $query->where('role', User::ROLE_TENANT))
@@ -60,7 +62,8 @@ class MaintenanceRequestResource extends Resource
                             ->searchable()
                             ->preload()
                             ->default(fn () => auth()->user()->role === User::ROLE_TENANT ? auth()->id() : null)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT),
+                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT)
+                            ->dehydrated(),
                         Forms\Components\TextInput::make('title')
                             ->label('Judul')
                             ->required()
