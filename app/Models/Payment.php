@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 #[ScopedBy([BranchScope::class])]
 class Payment extends Model
 {
-    protected $fillable = ['branch_id', 'invoice_id', 'amount', 'payment_date', 'payment_method', 'proof_of_payment', 'status'];
+    protected $fillable = ['branch_id', 'invoice_id', 'payment_method_id', 'amount', 'payment_date', 'payment_method', 'proof_of_payment', 'status'];
 
     public function branch(): BelongsTo
     {
@@ -21,5 +21,10 @@ class Payment extends Model
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    public function method(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 }

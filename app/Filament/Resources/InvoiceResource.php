@@ -159,12 +159,10 @@ class InvoiceResource extends Resource
                             ->image()
                             ->directory('payments')
                             ->required(),
-                        Forms\Components\Select::make('payment_method')
-                            ->label('Metode')
-                            ->options([
-                                'transfer' => 'Transfer Bank',
-                                'cash' => 'Tunai',
-                            ])
+                        Forms\Components\Select::make('payment_method_id')
+                            ->label('Metode Pembayaran')
+                            ->relationship('payments', 'id') // Placeholder for relationship, will fix below
+                            ->options(\App\Models\PaymentMethod::where('is_active', true)->pluck('name', 'id'))
                             ->required(),
                         Forms\Components\DatePicker::make('payment_date')
                             ->label('Tanggal Bayar')
@@ -172,11 +170,14 @@ class InvoiceResource extends Resource
                             ->required(),
                     ])
                     ->action(function (Invoice $record, array $data) {
+                        $paymentMethod = \App\Models\PaymentMethod::find($data['payment_method_id']);
+
                         $record->payments()->create([
                             'branch_id' => $record->branch_id,
                             'amount' => $record->amount,
                             'payment_date' => $data['payment_date'],
-                            'payment_method' => $data['payment_method'],
+                            'payment_method_id' => $data['payment_method_id'],
+                            'payment_method' => $paymentMethod?->name ?? 'Other',
                             'proof_of_payment' => $data['proof_of_payment'],
                             'status' => 'pending',
                         ]);
