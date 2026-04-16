@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 #[ScopedBy([BranchScope::class])]
 class Branch extends Model
 {
-    protected $fillable = ['name', 'address', 'phone'];
+    protected $fillable = ['name', 'address', 'phone', 'penalty_type', 'penalty_amount', 'penalty_grace_period'];
 
     public function users(): BelongsToMany
     {
@@ -22,5 +22,20 @@ class Branch extends Model
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
+    }
+
+    public function leases(): HasMany
+    {
+        return $this->hasMany(Lease::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

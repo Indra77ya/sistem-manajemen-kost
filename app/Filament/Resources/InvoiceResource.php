@@ -29,40 +29,84 @@ class InvoiceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('branch_id')
-                    ->label('Cabang')
-                    ->relationship('branch', 'name')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\Select::make('lease_id')
-                    ->label('Sewa')
-                    ->relationship('lease', 'id', fn (Builder $query) => $query->with(['room', 'tenant']))
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->tenant->name} - Kamar {$record->room->number}")
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\TextInput::make('invoice_number')
-                    ->label('Nomor Invoice')
-                    ->required()
-                    ->default(fn () => 'INV-' . strtoupper(uniqid())),
-                Forms\Components\TextInput::make('amount')
-                    ->label('Jumlah')
-                    ->required()
-                    ->numeric()
-                    ->prefix('Rp'),
-                Forms\Components\DatePicker::make('due_date')
-                    ->label('Jatuh Tempo')
-                    ->required()
-                    ->default(now()->addDays(7)),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'unpaid' => 'Belum Bayar',
-                        'paid' => 'Lunas',
-                        'overdue' => 'Terlambat',
-                    ])
-                    ->required()
-                    ->default('unpaid'),
+                Forms\Components\Section::make('Header Tagihan')
+                    ->schema([
+                        Forms\Components\Select::make('branch_id')
+                            ->label('Cabang')
+                            ->relationship('branch', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\Select::make('lease_id')
+                            ->label('Sewa')
+                            ->relationship('lease', 'id', fn (Builder $query) => $query->with(['room', 'tenant']))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->tenant->name} - Kamar {$record->room->number}")
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\TextInput::make('invoice_number')
+                            ->label('Nomor Invoice')
+                            ->required()
+                            ->default(fn () => 'INV-' . strtoupper(uniqid())),
+                        Forms\Components\DatePicker::make('due_date')
+                            ->label('Jatuh Tempo')
+                            ->required()
+                            ->default(now()->addDays(7)),
+                        Forms\Components\Select::make('status')
+                            ->options([
+                                'unpaid' => 'Belum Bayar',
+                                'paid' => 'Lunas',
+                                'overdue' => 'Terlambat',
+                            ])
+                            ->required()
+                            ->default('unpaid'),
+                        Forms\Components\TextInput::make('amount')
+                            ->label('Total Tagihan')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->dehydrated(),
+                    ])->columns(3),
+
+                Forms\Components\Section::make('Rincian Item')
+                    ->schema([
+                        Forms\Components\Repeater::make('items')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\TextInput::make('description')
+                                    ->label('Deskripsi')
+                                    ->required()
+                                    ->columnSpan(2),
+                                Forms\Components\TextInput::make('amount')
+                                    ->label('Jumlah')
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->columnSpan(1),
+                                Forms\Components\Select::make('type')
+                                    ->label('Tipe')
+                                    ->options([
+                                        'rent' => 'Sewa Kamar',
+                                        'deposit' => 'Deposit',
+                                        'service' => 'Layanan',
+                                        'penalty' => 'Denda',
+                                        'other' => 'Lainnya',
+                                    ])
+                                    ->required()
+                                    ->columnSpan(1),
+                            ])
+                            ->columns(4)
+                            ->live()
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                $items = $get('items') ?? [];
+                                $total = 0;
+                                foreach ($items as $item) {
+                                    $total += (float) ($item['amount'] ?? 0);
+                                }
+                                $set('amount', $total);
+                            }),
+                    ]),
             ]);
     }
 
@@ -80,7 +124,7 @@ class InvoiceResource extends Resource
                     ->label('Nomor')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Jumlah')
+                    ->label('Total')
                     ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
@@ -99,14 +143,6 @@ class InvoiceResource extends Resource
                         'unpaid' => 'Belum Bayar',
                         'overdue' => 'Terlambat',
                     }),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -145,6 +181,11 @@ class InvoiceResource extends Resource
                             'status' => 'pending',
                         ]);
                     }),
+                Tables\Actions\Action::make('download')
+                    ->label('Unduh')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn (Invoice $record) => route('invoice.download', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

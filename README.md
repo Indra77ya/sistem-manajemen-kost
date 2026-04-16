@@ -6,9 +6,13 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 
 - **Multi-Cabang:** Isolasi data antar cabang untuk Admin Cabang.
 - **Manajemen Kamar:** Pemantauan status kamar (Tersedia, Terisi, Perbaikan).
-- **Manajemen Sewa:** Pencatatan kontrak sewa penyewa.
-- **Tagihan Otomatis:** Pembuatan invoice bulanan secara otomatis.
+- **Manajemen Sewa & Deposit:** Pencatatan kontrak sewa penyewa lengkap dengan pengelolaan uang jaminan (deposit).
+- **Layanan Tambahan (Add-ons):** Pengelolaan layanan ekstra per cabang (Wifi, Parkir, dll) yang dapat ditagihkan secara berulang.
+- **Tagihan Itemized & Otomatis:** Pembuatan invoice bulanan otomatis dengan rincian item (Sewa, Deposit, Layanan, Denda).
+- **Denda Otomatis:** Sistem denda (Flat atau Harian) yang dikonfigurasi per cabang dengan masa tenggang.
 - **Verifikasi Pembayaran:** Konfirmasi manual bukti transfer oleh admin.
+- **Download Invoice PDF:** Fitur unduh invoice dalam format PDF yang aman dan profesional.
+- **Proses Check-out:** Penghitungan otomatis penyelesaian deposit dan status kamar saat penyewa keluar.
 - **Layanan Komplain:** Manajemen laporan kerusakan dari penyewa.
 - **Dashboard Statistik:** Ringkasan pendapatan dan ketersediaan kamar.
 
@@ -17,7 +21,7 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 1. **Developer:** Akses penuh ke seluruh sistem dan data (tersembunyi dari user lain).
 2. **Owner:** Melihat semua data di seluruh cabang.
 3. **Admin Cabang:** Mengelola data hanya pada cabang yang ditugaskan.
-4. **Penyewa (Tenant):** Melihat tagihan dan status sewa mereka sendiri.
+4. **Penyewa (Tenant):** Melihat tagihan, mengunggah bukti bayar, dan mengunduh invoice PDF mereka sendiri.
 
 ## Persyaratan Sistem
 
@@ -82,31 +86,35 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
    ```bash
    * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
    ```
-   *Catatan: Pastikan untuk mendaftarkan command `kost:generate-invoices` di `routes/console.php` agar berjalan harian.*
+   *Catatan: Pastikan untuk mendaftarkan command harian di `routes/console.php`.*
 
 ## Alur Kerja Utama
 
-### 1. Pendaftaran Penghuni
-- Admin membuat data **Pengguna** dengan role `Penyewa`.
-- Admin membuat data **Sewa (Lease)**, menghubungkan penyewa dengan kamar dan cabang.
-- **Sistem Otomatis:** Saat Sewa dibuat, status kamar berubah menjadi `Terisi` dan **Invoice Pertama** otomatis terbit.
+### 1. Pendaftaran & Sewa Baru
+- Admin membuat data **Penyewa**.
+- Admin membuat data **Sewa (Lease)**, menentukan kamar, jumlah deposit, dan layanan tambahan (Wifi, dll).
+- **Sistem Otomatis:** Saat Sewa dibuat, status kamar berubah menjadi `Terisi` dan **Invoice Pertama** terbit mencakup biaya sewa bulan pertama, deposit, dan layanan yang dipilih.
 
-### 2. Pembayaran Tagihan
-- Penyewa login ke dashboard, masuk ke menu **Tagihan**.
-- Penyewa menekan tombol **Bayar** dan mengunggah bukti transfer.
-- Admin mengecek menu **Pembayaran**, lalu menekan tombol **Verifikasi**.
-- **Sistem Otomatis:** Saat Pembayaran diverifikasi, status Invoice berubah menjadi `Lunas`.
+### 2. Pembayaran & Invoice
+- Penyewa melihat rincian tagihan dan mengunduh **Invoice PDF**.
+- Penyewa mengunggah bukti transfer via dashboard.
+- Admin memverifikasi pembayaran. Status Invoice berubah menjadi `Lunas` setelah diverifikasi.
 
-### 3. Penagihan Bulanan
-- Setiap bulan (sesuai tanggal tagihan di kontrak), sistem menjalankan perintah `kost:generate-invoices` untuk menerbitkan tagihan baru.
-- Tagihan yang belum dibayar melewati jatuh tempo akan otomatis ditandai sebagai `Overdue` via perintah `kost:mark-overdue`.
+### 3. Penagihan Bulanan & Denda
+- Sistem menjalankan `kost:generate-invoices` setiap hari untuk mengecek siapa yang masuk tanggal tagihan.
+- Sistem menjalankan `kost:mark-overdue` untuk menandai tagihan terlambat dan **menerapkan denda** sesuai konfigurasi cabang (Flat atau akumulasi Harian).
+
+### 4. Proses Check-out
+- Saat penyewa akan keluar, Admin menggunakan tombol **Check-out** di menu Sewa.
+- Sistem menghitung sisa deposit yang harus dikembalikan (Deposit dikurangi tagihan yang belum lunas).
+- Status kamar otomatis kembali menjadi `Tersedia`.
 
 ## Perintah Khusus
 - Generate tagihan bulanan secara manual:
   ```bash
   php artisan kost:generate-invoices
   ```
-- Tandai tagihan terlambat secara manual:
+- Tandai tagihan terlambat & hitung denda secara manual:
   ```bash
   php artisan kost:mark-overdue
   ```
