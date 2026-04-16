@@ -42,7 +42,7 @@ class MaintenanceRequestResource extends Resource
                             ->preload()
                             ->live()
                             ->default(fn () => \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->first()?->branch_id)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists())
+                            ->disabled(fn () => auth()->user()->hasRole('tenant') && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists())
                             ->dehydrated(),
                         Forms\Components\Select::make('room_id')
                             ->label('Kamar')
@@ -53,16 +53,16 @@ class MaintenanceRequestResource extends Resource
                             ->searchable()
                             ->preload()
                             ->default(fn () => \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->first()?->room_id)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists())
+                            ->disabled(fn () => auth()->user()->hasRole('tenant') && \App\Models\Lease::where('user_id', auth()->id())->where('status', 'active')->exists())
                             ->dehydrated(),
                         Forms\Components\Select::make('user_id')
                             ->label('Penyewa')
-                            ->relationship('tenant', 'name', fn (Builder $query) => $query->where('role', User::ROLE_TENANT))
+                            ->relationship('tenant', 'name', fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'tenant')))
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->default(fn () => auth()->user()->role === User::ROLE_TENANT ? auth()->id() : null)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT)
+                            ->default(fn () => auth()->user()->hasRole('tenant') ? auth()->id() : null)
+                            ->disabled(fn () => auth()->user()->hasRole('tenant'))
                             ->dehydrated(),
                         Forms\Components\TextInput::make('title')
                             ->label('Judul')
@@ -82,10 +82,10 @@ class MaintenanceRequestResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('technician_id')
                             ->label('Teknisi')
-                            ->relationship('technician', 'name', fn (Builder $query) => $query->where('role', User::ROLE_TECHNICIAN))
+                            ->relationship('technician', 'name', fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'technician')))
                             ->searchable()
                             ->preload()
-                            ->disabled(fn () => !in_array(auth()->user()->role, [User::ROLE_ADMIN, User::ROLE_OWNER, User::ROLE_DEVELOPER])),
+                            ->disabled(fn () => !auth()->user()->hasAnyRole(['super_admin', 'owner', 'admin_cabang'])),
                         Forms\Components\Select::make('priority')
                             ->label('Prioritas')
                             ->options([
@@ -105,22 +105,22 @@ class MaintenanceRequestResource extends Resource
                             ])
                             ->required()
                             ->default('pending')
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT),
+                            ->disabled(fn () => auth()->user()->hasRole('tenant')),
                         Forms\Components\TextInput::make('total_cost')
                             ->label('Total Biaya')
                             ->numeric()
                             ->prefix('Rp')
                             ->default(0)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT),
+                            ->disabled(fn () => auth()->user()->hasRole('tenant')),
                         Forms\Components\Toggle::make('is_charged_to_tenant')
                             ->label('Bebankan ke Penyewa?')
                             ->default(false)
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT),
+                            ->disabled(fn () => auth()->user()->hasRole('tenant')),
                         Forms\Components\FileUpload::make('attachment_after')
                             ->label('Foto Sesudah Perbaikan')
                             ->image()
                             ->directory('maintenance-attachments')
-                            ->disabled(fn () => auth()->user()->role === User::ROLE_TENANT),
+                            ->disabled(fn () => auth()->user()->hasRole('tenant')),
                         Forms\Components\DateTimePicker::make('started_at')
                             ->label('Mulai Dikerjakan')
                             ->disabled(),
@@ -210,7 +210,7 @@ class MaintenanceRequestResource extends Resource
                     ->color('warning')
                     ->visible(fn (MaintenanceRequest $record) =>
                         $record->status === 'pending' &&
-                        (auth()->user()->role !== User::ROLE_TECHNICIAN || $record->technician_id === auth()->id())
+                        (!auth()->user()->hasRole('technician') || $record->technician_id === auth()->id())
                     )
                     ->action(function (MaintenanceRequest $record) {
                         $record->update([
@@ -225,7 +225,7 @@ class MaintenanceRequestResource extends Resource
                     ->color('success')
                     ->visible(fn (MaintenanceRequest $record) =>
                         $record->status === 'in_progress' &&
-                        (auth()->user()->role !== User::ROLE_TECHNICIAN || $record->technician_id === auth()->id())
+                        (!auth()->user()->hasRole('technician') || $record->technician_id === auth()->id())
                     )
                     ->form([
                         Forms\Components\FileUpload::make('attachment_after')

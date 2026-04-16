@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Spatie\Permission\Traits\HasRoles;
 
 use App\Models\Scopes\HideDeveloperScope;
 use App\Models\Scopes\BranchScope;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     const ROLE_DEVELOPER = 'developer';
     const ROLE_OWNER = 'owner';

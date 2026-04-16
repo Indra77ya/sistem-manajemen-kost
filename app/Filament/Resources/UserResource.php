@@ -41,15 +41,12 @@ class UserResource extends Resource
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create'),
-                Forms\Components\Select::make('role')
-                    ->options([
-                        User::ROLE_DEVELOPER => 'Developer',
-                        User::ROLE_OWNER => 'Owner',
-                        User::ROLE_ADMIN => 'Admin Cabang',
-                        User::ROLE_TECHNICIAN => 'Teknisi',
-                        User::ROLE_TENANT => 'Penyewa',
-                    ])
-                    ->required(),
+                Forms\Components\Select::make('roles')
+                    ->label('Role')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 
@@ -62,22 +59,10 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('role')
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Role')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        User::ROLE_DEVELOPER => 'danger',
-                        User::ROLE_OWNER => 'warning',
-                        User::ROLE_ADMIN => 'info',
-                        User::ROLE_TECHNICIAN => 'gray',
-                        User::ROLE_TENANT => 'success',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        User::ROLE_DEVELOPER => 'Developer',
-                        User::ROLE_OWNER => 'Owner',
-                        User::ROLE_ADMIN => 'Admin Cabang',
-                        User::ROLE_TECHNICIAN => 'Teknisi',
-                        User::ROLE_TENANT => 'Penyewa',
-                    }),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat pada')
                     ->dateTime()

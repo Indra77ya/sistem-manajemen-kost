@@ -21,13 +21,18 @@ class BranchScope implements Scope
         if (Auth::hasUser()) {
             $user = Auth::user();
 
-            // Developer and Owner can see everything
-            if ($user->role === User::ROLE_DEVELOPER || $user->role === User::ROLE_OWNER) {
+            // Super Admin can see everything
+            if ($user->hasRole('super_admin')) {
+                return;
+            }
+
+            // Owner can also see everything across branches
+            if ($user->hasRole('owner')) {
                 return;
             }
 
             // Admin can only see data from branches they are assigned to
-            if ($user->role === User::ROLE_ADMIN) {
+            if ($user->hasRole('admin_cabang')) {
                 $branchIds = $this->getBranchIds($user);
 
                 if ($model instanceof \App\Models\Branch) {
@@ -44,7 +49,7 @@ class BranchScope implements Scope
             }
 
             // Technician can only see assigned maintenance requests
-            if ($user->role === User::ROLE_TECHNICIAN) {
+            if ($user->hasRole('technician')) {
                 if ($model instanceof \App\Models\MaintenanceRequest) {
                     $builder->where('technician_id', $user->id);
                 } else {
@@ -62,7 +67,7 @@ class BranchScope implements Scope
             }
 
             // Tenant can only see their own data
-            if ($user->role === User::ROLE_TENANT) {
+            if ($user->hasRole('tenant')) {
                 if ($model instanceof \App\Models\Lease ||
                     $model instanceof \App\Models\MaintenanceRequest) {
                     $builder->where($model->getTable() . '.user_id', $user->id);

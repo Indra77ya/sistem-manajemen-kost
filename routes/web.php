@@ -17,12 +17,12 @@ Route::get('/invoice/{invoice}/download', function (Invoice $invoice) {
     $user = Auth::user();
 
     // Tenants can only download their own invoices
-    if ($user->role === 'tenant' && $invoice->lease->user_id !== $user->id) {
+    if ($user->hasRole('tenant') && $invoice->lease->user_id !== $user->id) {
         abort(403);
     }
 
     // Admins can only download invoices from their branches
-    if ($user->role === 'admin') {
+    if ($user->hasRole('admin_cabang')) {
         $branchIds = $user->branches()->pluck('branches.id')->toArray();
         if (!in_array($invoice->branch_id, $branchIds)) {
             abort(403);

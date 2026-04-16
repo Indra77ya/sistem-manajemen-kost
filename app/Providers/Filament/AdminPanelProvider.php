@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -42,6 +43,9 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\IncomeChart::class,
                 \App\Filament\Widgets\RoomOccupancyChart::class,
                 \App\Filament\Widgets\ArrearsWidget::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->middleware([
                 EncryptCookies::class,
