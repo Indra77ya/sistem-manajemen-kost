@@ -14,7 +14,7 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - **Download Invoice PDF:** Fitur unduh invoice dalam format PDF yang aman dan profesional.
 - **Proses Check-out:** Penghitungan otomatis penyelesaian deposit dan status kamar saat penyewa keluar.
 - **Modul Komplain & Perawatan Profesional:** Manajemen laporan kerusakan lengkap dengan lampiran foto (sebelum/sesudah), penugasan teknisi, pelacakan waktu kerja, dan integrasi biaya perbaikan ke deposit.
-- **Dashboard Statistik:** Ringkasan pendapatan dan ketersediaan kamar.
+- **Dashboard & Statistik (Reporting):** Visualisasi data real-time untuk owner dan admin, termasuk grafik pendapatan bulanan, diagram okupansi kamar, dan widget daftar tunggakan.
 
 ## Role Pengguna
 
