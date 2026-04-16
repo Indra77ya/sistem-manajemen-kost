@@ -150,11 +150,12 @@ class LeaseResource extends Resource
                     ->action(function (Lease $record) {
                         $unpaidAmount = $record->invoices()->where('status', '!=', 'paid')->sum('amount');
 
-                        // Calculate maintenance costs charged to tenant
+                        // Calculate maintenance costs charged to tenant for this specific lease period
                         $maintenanceCosts = \App\Models\MaintenanceRequest::where('room_id', $record->room_id)
                             ->where('user_id', $record->user_id)
                             ->where('is_charged_to_tenant', true)
                             ->where('status', 'resolved')
+                            ->where('created_at', '>=', $record->start_date)
                             ->sum('total_cost');
 
                         $refundAmount = $record->deposit_amount - $unpaidAmount - $maintenanceCosts;

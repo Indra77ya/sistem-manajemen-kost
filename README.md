@@ -13,8 +13,16 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - **Verifikasi Pembayaran:** Konfirmasi manual bukti transfer oleh admin.
 - **Download Invoice PDF:** Fitur unduh invoice dalam format PDF yang aman dan profesional.
 - **Proses Check-out:** Penghitungan otomatis penyelesaian deposit dan status kamar saat penyewa keluar.
+- **Modul Sewa & Tagihan (Financial Core):** Pengelolaan kontrak sewa yang terintegrasi dengan invoice otomatis, denda keterlambatan, layanan tambahan, dan sistem deposit yang akurat.
 - **Modul Komplain & Perawatan Profesional:** Manajemen laporan kerusakan lengkap dengan lampiran foto (sebelum/sesudah), penugasan teknisi, pelacakan waktu kerja, dan integrasi biaya perbaikan ke deposit.
 - **Dashboard & Statistik (Reporting):** Visualisasi data real-time untuk owner dan admin, termasuk grafik pendapatan bulanan, diagram okupansi kamar, dan widget daftar tunggakan.
+
+## Fitur Utama Modul Sewa & Tagihan
+- **Itemized Invoicing:** Setiap tagihan merinci biaya sewa, deposit, layanan tambahan, dan denda secara transparan.
+- **Otomasi Tagihan:** Sistem secara otomatis menerbitkan invoice bulanan berdasarkan tanggal tagihan yang ditentukan di kontrak sewa.
+- **Sistem Denda Fleksibel:** Mendukung denda Flat (sekali bayar) atau Harian (akumulatif) dengan pengaturan masa tenggang (grace period) per cabang.
+- **Manajemen Deposit:** Deposit dicatat saat mulai sewa dan dikelola secara otomatis sebagai pemotong tagihan/biaya perbaikan saat check-out.
+- **Invoice PDF & Bukti Bayar:** Penyewa dapat mengunduh invoice profesional dalam format PDF dan mengunggah bukti transfer langsung dari dashboard.
 
 ## Role Pengguna
 

@@ -43,10 +43,11 @@ class UserResource extends Resource
                     ->required(fn (string $context): bool => $context === 'create'),
                 Forms\Components\Select::make('role')
                     ->options([
-                        'developer' => 'Developer',
-                        'owner' => 'Owner',
-                        'admin' => 'Admin Cabang',
-                        'tenant' => 'Penyewa',
+                        User::ROLE_DEVELOPER => 'Developer',
+                        User::ROLE_OWNER => 'Owner',
+                        User::ROLE_ADMIN => 'Admin Cabang',
+                        User::ROLE_TECHNICIAN => 'Teknisi',
+                        User::ROLE_TENANT => 'Penyewa',
                     ])
                     ->required(),
             ]);
@@ -64,16 +65,18 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'developer' => 'danger',
-                        'owner' => 'warning',
-                        'admin' => 'info',
-                        'tenant' => 'success',
+                        User::ROLE_DEVELOPER => 'danger',
+                        User::ROLE_OWNER => 'warning',
+                        User::ROLE_ADMIN => 'info',
+                        User::ROLE_TECHNICIAN => 'gray',
+                        User::ROLE_TENANT => 'success',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'developer' => 'Developer',
-                        'owner' => 'Owner',
-                        'admin' => 'Admin Cabang',
-                        'tenant' => 'Penyewa',
+                        User::ROLE_DEVELOPER => 'Developer',
+                        User::ROLE_OWNER => 'Owner',
+                        User::ROLE_ADMIN => 'Admin Cabang',
+                        User::ROLE_TECHNICIAN => 'Teknisi',
+                        User::ROLE_TENANT => 'Penyewa',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat pada')

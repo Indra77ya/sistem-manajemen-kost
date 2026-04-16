@@ -4,8 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Models\Invoice;
 use Filament\Widgets\ChartWidget;
-use Flowframe\Trend\Trend;
-use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Facades\DB;
 
 class IncomeChart extends ChartWidget
@@ -14,13 +12,22 @@ class IncomeChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = Invoice::where('status', 'paid')
-            ->select(
+        $query = Invoice::where('status', 'paid')
+            ->whereYear('updated_at', date('Y'));
+
+        if (DB::getDriverName() === 'sqlite') {
+            $query->select(
                 DB::raw('sum(amount) as total'),
                 DB::raw("strftime('%m', updated_at) as month")
-            )
-            ->whereYear('updated_at', date('Y'))
-            ->groupBy('month')
+            );
+        } else {
+            $query->select(
+                DB::raw('sum(amount) as total'),
+                DB::raw("DATE_FORMAT(updated_at, '%m') as month")
+            );
+        }
+
+        $data = $query->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month')
             ->toArray();
