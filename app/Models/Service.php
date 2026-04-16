@@ -23,4 +23,9 @@ class Service extends Model
     {
         return $this->belongsToMany(Lease::class);
     }
+
+    public function rooms(): BelongsToMany
+    {
+        return $this->belongsToMany(Room::class);
+    }
 }

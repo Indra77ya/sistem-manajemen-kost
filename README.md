@@ -7,7 +7,7 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - **Multi-Cabang:** Isolasi data antar cabang untuk Admin Cabang.
 - **Manajemen Kamar:** Pemantauan status kamar (Tersedia, Terisi, Perbaikan).
 - **Manajemen Sewa & Deposit:** Pencatatan kontrak sewa penyewa lengkap dengan pengelolaan uang jaminan (deposit).
-- **Layanan Tambahan (Add-ons):** Pengelolaan layanan ekstra per cabang (Wifi, Parkir, dll) yang dapat ditagihkan secara berulang.
+- **Layanan Tambahan (Add-ons):** Pengelolaan layanan ekstra per kamar (Wifi, Parkir, dll) yang dapat ditagihkan secara berulang.
 - **Tagihan Itemized & Otomatis:** Pembuatan invoice bulanan otomatis dengan rincian item (Sewa, Deposit, Layanan, Denda).
 - **Denda Otomatis:** Sistem denda (Flat atau Harian) yang dikonfigurasi per cabang dengan masa tenggang.
 - **Verifikasi Pembayaran:** Konfirmasi manual bukti transfer oleh admin.

@@ -86,7 +86,9 @@ class LeaseResource extends Resource
                         Forms\Components\CheckboxList::make('services')
                             ->label('Layanan Tambahan')
                             ->relationship('services', 'name', fn (Builder $query, Forms\Get $get) =>
-                                $query->where('branch_id', $get('branch_id'))
+                                $query->whereHas('rooms', function ($q) use ($get) {
+                                    $q->where('rooms.id', $get('room_id'));
+                                })
                             )
                             ->columns(2),
                         Forms\Components\Select::make('status')
