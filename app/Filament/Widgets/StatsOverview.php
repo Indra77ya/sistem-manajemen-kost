@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Branch;
+use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Room;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -28,9 +29,13 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success'),
             Stat::make('Pendapatan Bulan Ini', 'Rp ' . number_format($invoicesQuery->where('status', 'paid')->whereMonth('updated_at', now()->month)->sum('amount'), 0, ',', '.'))
-                ->description('Total tagihan yang sudah dibayar')
+                ->description('Total tagihan dibayar')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
+            Stat::make('Pengeluaran Bulan Ini', 'Rp ' . number_format(Expense::whereMonth('date', now()->month)->sum('amount'), 0, ',', '.'))
+                ->description('Total pengeluaran operasional')
+                ->descriptionIcon('heroicon-m-arrow-trending-down')
+                ->color('danger'),
         ];
     }
 }

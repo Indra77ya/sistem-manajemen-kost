@@ -2,35 +2,57 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Expense;
 use App\Models\Invoice;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class IncomeChart extends ChartWidget
 {
-    protected static ?string $heading = 'Pendapatan Bulanan';
+    protected static ?string $heading = 'Pendapatan vs Pengeluaran';
 
     protected function getData(): array
     {
         $connection = DB::connection();
         $driver = $connection->getDriverName();
 
-        $query = Invoice::where('status', 'paid')
+        // Income Data
+        $incomeQuery = Invoice::where('status', 'paid')
             ->whereYear('updated_at', date('Y'));
 
         if ($driver === 'sqlite') {
-            $query->select(
+            $incomeQuery->select(
                 DB::raw('sum(amount) as total'),
                 DB::raw("strftime('%m', updated_at) as month")
             );
         } else {
-            $query->select(
+            $incomeQuery->select(
                 DB::raw('sum(amount) as total'),
                 DB::raw("DATE_FORMAT(updated_at, '%m') as month")
             );
         }
 
-        $data = $query->groupBy('month')
+        $incomeData = $incomeQuery->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        // Expense Data
+        $expenseQuery = Expense::whereYear('date', date('Y'));
+
+        if ($driver === 'sqlite') {
+            $expenseQuery->select(
+                DB::raw('sum(amount) as total'),
+                DB::raw("strftime('%m', date) as month")
+            );
+        } else {
+            $expenseQuery->select(
+                DB::raw('sum(amount) as total'),
+                DB::raw("DATE_FORMAT(date, '%m') as month")
+            );
+        }
+
+        $expenseData = $expenseQuery->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month')
             ->toArray();
@@ -41,21 +63,29 @@ class IncomeChart extends ChartWidget
             '09' => 'Sep', '10' => 'Okt', '11' => 'Nov', '12' => 'Des'
         ];
 
-        $chartData = [];
+        $chartIncomeData = [];
+        $chartExpenseData = [];
         $labels = [];
 
         foreach ($months as $key => $name) {
             $labels[] = $name;
-            $chartData[] = $data[$key] ?? 0;
+            $chartIncomeData[] = $incomeData[$key] ?? 0;
+            $chartExpenseData[] = $expenseData[$key] ?? 0;
         }
 
         return [
             'datasets' => [
                 [
                     'label' => 'Pendapatan (Rp)',
-                    'data' => $chartData,
+                    'data' => $chartIncomeData,
                     'backgroundColor' => '#36A2EB',
-                    'borderColor' => '#9BD0F5',
+                    'borderColor' => '#36A2EB',
+                ],
+                [
+                    'label' => 'Pengeluaran (Rp)',
+                    'data' => $chartExpenseData,
+                    'backgroundColor' => '#FF6384',
+                    'borderColor' => '#FF6384',
                 ],
             ],
             'labels' => $labels,

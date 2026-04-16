@@ -246,6 +246,25 @@ class MaintenanceRequestResource extends Resource
                             'attachment_after' => $data['attachment_after'],
                             'total_cost' => $data['total_cost'],
                         ]);
+
+                        if ($data['total_cost'] > 0) {
+                            $category = \App\Models\ExpenseCategory::firstOrCreate(
+                                ['name' => 'Perbaikan'],
+                                ['description' => 'Biaya perbaikan dan pemeliharaan fasilitas']
+                            );
+
+                            \App\Models\Expense::create([
+                                'branch_id' => $record->branch_id,
+                                'expense_category_id' => $category->id,
+                                'maintenance_request_id' => $record->id,
+                                'title' => 'Biaya Perbaikan: ' . $record->title,
+                                'amount' => $data['total_cost'],
+                                'date' => now(),
+                                'notes' => 'Otomatis dibuat dari modul Komplain.',
+                                'attachment' => $data['attachment_after'],
+                            ]);
+                        }
+
                         Notification::make()->title('Perbaikan selesai').success()->send();
                     }),
                 Tables\Actions\EditAction::make(),
