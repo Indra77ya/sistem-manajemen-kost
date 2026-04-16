@@ -12,7 +12,14 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 #[ScopedBy([BranchScope::class])]
 class Room extends Model
 {
-    protected $fillable = ['branch_id', 'number', 'type', 'price', 'capacity', 'description', 'status'];
+    protected $fillable = ['branch_id', 'number', 'type', 'price', 'capacity', 'description', 'status', 'gallery'];
+
+    protected function casts(): array
+    {
+        return [
+            'gallery' => 'array',
+        ];
+    }
 
     public function branch(): BelongsTo
     {
@@ -27,5 +34,10 @@ class Room extends Model
     public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class);
+    }
+
+    public function inventories(): HasMany
+    {
+        return $this->hasMany(Inventory::class);
     }
 }

@@ -8,6 +8,8 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun de
 - **Manajemen Kamar:** Pemantauan status kamar (Tersedia, Terisi, Perbaikan).
 - **Manajemen Sewa & Deposit:** Pencatatan kontrak sewa penyewa lengkap dengan pengelolaan uang jaminan (deposit).
 - **Layanan Tambahan (Add-ons):** Pengelolaan layanan ekstra per kamar (Wifi, Parkir, dll) yang dapat ditagihkan secara berulang.
+- **Manajemen Inventaris Kamar:** Pencatatan aset di setiap kamar (AC, Kasur, dll) lengkap dengan status kondisi barang.
+- **Galeri Foto Kamar:** Penyimpanan foto-foto kondisi kamar untuk dokumentasi dan pemasaran.
 - **Tagihan Itemized & Otomatis:** Pembuatan invoice bulanan otomatis dengan rincian item (Sewa, Deposit, Layanan, Denda).
 - **Denda Otomatis:** Sistem denda (Flat atau Harian) yang dikonfigurasi per cabang dengan masa tenggang.
 - **Verifikasi Pembayaran:** Konfirmasi manual bukti transfer oleh admin.
