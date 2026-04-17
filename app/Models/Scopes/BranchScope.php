@@ -35,7 +35,12 @@ class BranchScope implements Scope
             if ($user->hasRole('admin_cabang')) {
                 $branchIds = $this->getBranchIds($user);
 
-                if ($model instanceof \App\Models\Branch) {
+                if ($model instanceof \App\Models\Announcement) {
+                    $builder->where(function ($query) use ($branchIds) {
+                        $query->whereIn('branch_id', $branchIds)
+                              ->orWhereNull('branch_id');
+                    });
+                } elseif ($model instanceof \App\Models\Branch) {
                     $builder->whereIn($model->getTable() . '.id', $branchIds);
                 } elseif ($model instanceof \App\Models\User) {
                     $builder->where(function ($query) use ($branchIds, $user) {
@@ -68,7 +73,13 @@ class BranchScope implements Scope
 
             // Tenant can only see their own data
             if ($user->hasRole('tenant')) {
-                if ($model instanceof \App\Models\Lease ||
+                if ($model instanceof \App\Models\Announcement) {
+                    $branchIds = $this->getBranchIds($user);
+                    $builder->where(function ($query) use ($branchIds) {
+                        $query->whereIn('branch_id', $branchIds)
+                              ->orWhereNull('branch_id');
+                    });
+                } elseif ($model instanceof \App\Models\Lease ||
                     $model instanceof \App\Models\MaintenanceRequest) {
                     $builder->where($model->getTable() . '.user_id', $user->id);
                 } elseif ($model instanceof \App\Models\Invoice) {
