@@ -4,21 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
 use App\Models\Scopes\BranchScope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 #[ScopedBy([BranchScope::class])]
 class Room extends Model
 {
-    protected $fillable = ['branch_id', 'number', 'type', 'price', 'capacity', 'description', 'status', 'gallery'];
+    use LogsActivity;
 
-    protected function casts(): array
+    protected $fillable = ['branch_id', 'number', 'type', 'price', 'capacity', 'status', 'description', 'gallery'];
+
+    protected $casts = [
+        'gallery' => 'array',
+    ];
+
+    public function getActivitylogOptions(): LogOptions
     {
-        return [
-            'gallery' => 'array',
-        ];
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 
     public function branch(): BelongsTo
@@ -26,18 +33,18 @@ class Room extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function leases(): HasMany
+    public function leases()
     {
         return $this->hasMany(Lease::class);
     }
 
-    public function services(): BelongsToMany
-    {
-        return $this->belongsToMany(Service::class);
-    }
-
-    public function inventories(): HasMany
+    public function inventories()
     {
         return $this->hasMany(Inventory::class);
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'room_service');
     }
 }

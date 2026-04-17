@@ -4,15 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
 use App\Models\Scopes\BranchScope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 #[ScopedBy([BranchScope::class])]
 class Invoice extends Model
 {
-    protected $fillable = ['branch_id', 'lease_id', 'invoice_number', 'amount', 'due_date', 'status'];
+    use LogsActivity;
+
+    protected $fillable = ['branch_id', 'lease_id', 'invoice_number', 'amount', 'due_date', 'status', 'notes'];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function branch(): BelongsTo
     {
@@ -24,23 +34,13 @@ class Invoice extends Model
         return $this->belongsTo(Lease::class);
     }
 
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class);
-    }
-
-    public function items(): HasMany
+    public function items()
     {
         return $this->hasMany(InvoiceItem::class);
     }
 
-    public function calculateTotal(): float
+    public function payments()
     {
-        return $this->items()->sum('amount');
-    }
-
-    public function updateTotal(): void
-    {
-        $this->update(['amount' => $this->calculateTotal()]);
+        return $this->hasMany(Payment::class);
     }
 }
