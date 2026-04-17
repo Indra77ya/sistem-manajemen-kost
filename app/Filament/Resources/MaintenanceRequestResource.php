@@ -64,6 +64,23 @@ class MaintenanceRequestResource extends Resource
                             ->default(fn () => auth()->user()->hasRole('tenant') ? auth()->id() : null)
                             ->disabled(fn () => auth()->user()->hasRole('tenant'))
                             ->dehydrated(),
+                        Forms\Components\Select::make('maintenance_category_id')
+                            ->label('Kategori')
+                            ->relationship('category', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                if (!$state) return;
+                                $category = \App\Models\MaintenanceCategory::find($state);
+                                if ($category) {
+                                    $set('priority', $category->default_priority);
+                                    if ($category->default_technician_id) {
+                                        $set('technician_id', $category->default_technician_id);
+                                    }
+                                }
+                            }),
                         Forms\Components\TextInput::make('title')
                             ->label('Judul')
                             ->required()
@@ -142,6 +159,9 @@ class MaintenanceRequestResource extends Resource
                 Tables\Columns\TextColumn::make('room.number')
                     ->label('Kamar')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Kategori')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tenant.name')
                     ->label('Penyewa')
                     ->sortable()
@@ -188,6 +208,9 @@ class MaintenanceRequestResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('maintenance_category_id')
+                    ->label('Kategori')
+                    ->relationship('category', 'name'),
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'pending' => 'Menunggu',

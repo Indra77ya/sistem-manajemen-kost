@@ -14,6 +14,7 @@ class MaintenanceRequest extends Model
     protected $fillable = [
         'branch_id',
         'room_id',
+        'maintenance_category_id',
         'user_id',
         'technician_id',
         'title',
@@ -56,5 +57,10 @@ class MaintenanceRequest extends Model
     public function technician(): BelongsTo
     {
         return $this->belongsTo(User::class, 'technician_id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(MaintenanceCategory::class, 'maintenance_category_id');
     }
 }
