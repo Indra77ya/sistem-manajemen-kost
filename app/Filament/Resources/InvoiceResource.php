@@ -161,7 +161,6 @@ class InvoiceResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('payment_method_id')
                             ->label('Metode Pembayaran')
-                            ->relationship('payments', 'id') // Placeholder for relationship, will fix below
                             ->options(\App\Models\PaymentMethod::where('is_active', true)->pluck('name', 'id'))
                             ->required(),
                         Forms\Components\DatePicker::make('payment_date')

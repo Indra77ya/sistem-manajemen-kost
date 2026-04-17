@@ -1,67 +1,51 @@
 # Sistem Manajemen Kost Multi-Cabang
 
-Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang. Dibangun dengan Laravel 12, Filament V3, dan Tailwind CSS.
+Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang yang profesional. Dibangun dengan Laravel 12, Filament V3, dan Tailwind CSS.
 
 ## Fitur Utama
 
-- **Multi-Cabang:** Isolasi data antar cabang untuk Admin Cabang.
-- **Manajemen Kamar:** Pemantauan status kamar (Tersedia, Terisi, Perbaikan).
-- **Manajemen Sewa & Deposit:** Pencatatan kontrak sewa penyewa lengkap dengan pengelolaan uang jaminan (deposit).
-- **Master Data Layanan Tambahan:** Pengelolaan terpusat untuk berbagai biaya tambahan (Wifi, Laundry, dll) yang dapat ditautkan ke tiap kamar secara spesifik.
-- **Master Data Aset (Barang):** Katalog barang terpusat untuk memudahkan standarisasi dan pemantauan jumlah aset di seluruh properti.
-- **Manajemen Inventaris Kamar:** Pencatatan aset di setiap kamar (AC, Kasur, dll) yang terhubung ke Master Data Aset, lengkap dengan status kondisi barang.
-- **Galeri Foto Kamar:** Penyimpanan foto-foto kondisi kamar untuk dokumentasi dan pemasaran.
-- **Tagihan Itemized & Otomatis:** Pembuatan invoice bulanan otomatis dengan rincian item (Sewa, Deposit, Layanan, Denda).
-- **Denda Otomatis:** Sistem denda (Flat atau Harian) yang dikonfigurasi per cabang dengan masa tenggang.
-- **Verifikasi Pembayaran:** Konfirmasi manual bukti transfer oleh admin.
-- **Download Invoice PDF:** Fitur unduh invoice dalam format PDF yang aman dan profesional.
-- **Proses Check-out:** Penghitungan otomatis penyelesaian deposit dan status kamar saat penyewa keluar.
-- **Modul Sewa & Tagihan (Financial Core):** Pengelolaan kontrak sewa yang terintegrasi dengan invoice otomatis, denda keterlambatan, layanan tambahan, dan sistem deposit yang akurat.
-- **Modul Komplain & Perawatan Profesional:** Manajemen laporan kerusakan lengkap dengan lampiran foto (sebelum/sesudah), penugasan teknisi, pelacakan waktu kerja, dan integrasi biaya perbaikan ke deposit.
-- **Dashboard & Statistik (Reporting):** Visualisasi data real-time untuk owner dan admin, termasuk grafik pendapatan bulanan, diagram okupansi kamar, dan widget daftar tunggakan.
-- **Dynamic RBAC (Role-Based Access Control):** Pengelolaan role dan izin yang fleksibel menggunakan Filament Shield. Owner dan Developer dapat membuat role baru dan mengatur hak akses spesifik per menu dan aksi.
-
-## Instruksi Pembaruan Sistem (PENTING)
-Jika Anda baru saja menarik (pull) perubahan terbaru, jalankan perintah berikut untuk memperbarui struktur database dan sistem keamanan:
-```bash
-php artisan migrate
-php artisan shield:generate --all --panel=admin
-php artisan db:seed --class=RolePermissionSeeder
-```
-
-## Fitur Utama Modul Sewa & Tagihan
-- **Itemized Invoicing:** Setiap tagihan merinci biaya sewa, deposit, layanan tambahan, dan denda secara transparan.
-- **Otomasi Tagihan:** Sistem secara otomatis menerbitkan invoice bulanan berdasarkan tanggal tagihan yang ditentukan di kontrak sewa.
-- **Sistem Denda Fleksibel:** Mendukung denda Flat (sekali bayar) atau Harian (akumulatif) dengan pengaturan masa tenggang (grace period) per cabang.
-- **Manajemen Deposit:** Deposit dicatat saat mulai sewa dan dikelola secara otomatis sebagai pemotong tagihan/biaya perbaikan saat check-out.
-- **Invoice PDF & Bukti Bayar:** Penyewa dapat mengunduh invoice profesional dalam format PDF dan mengunggah bukti transfer langsung dari dashboard.
+- **Multi-Cabang:** Isolasi data antar cabang untuk Admin Cabang dengan pengawasan penuh dari Owner.
+- **Manajemen Kamar:** Pemantauan status kamar (Tersedia, Terisi, Perbaikan), lengkap dengan visualisasi okupansi.
+- **Manajemen Sewa & Deposit:** Pengelolaan kontrak sewa terintegrasi dengan sistem uang jaminan (deposit).
+- **Master Data Layanan & Aset:**
+    - **Layanan:** Biaya tambahan (Wifi, Laundry, dll) yang fleksibel per kamar.
+    - **Aset (Inventaris):** Katalog barang terpusat dan pemantauan inventaris detail di tiap kamar lengkap dengan galeri foto.
+- **Sistem Keuangan Profesional:**
+    - **Tagihan Itemized:** Invoice otomatis dengan rincian biaya transparan.
+    - **Denda Otomatis:** Perhitungan denda (Flat/Harian) dengan masa tenggang per cabang.
+    - **Manajemen Pengeluaran:** Pencatatan biaya operasional (Gaji, Utilitas, dll) yang terintegrasi dengan modul perbaikan.
+    - **Metode Pembayaran:** Pengaturan rekening bank/metode bayar yang otomatis muncul sebagai instruksi di invoice PDF.
+- **Manajemen Komplain & Perbaikan:** Alur kerja lengkap dari laporan penyewa, penugasan teknisi, hingga otomatisasi pencatatan biaya perbaikan.
+- **Dynamic RBAC:** Keamanan tingkat lanjut dengan izin akses (permissions) yang dapat diatur secara dinamis via UI.
+- **Visual Reporting:** Dashboard interaktif dengan grafik pendapatan vs pengeluaran, tren okupansi, dan daftar tunggakan.
 
 ## Role Pengguna
 
-1. **Developer:** Akses penuh ke seluruh sistem dan data (tersembunyi dari user lain).
-2. **Owner:** Melihat semua data di seluruh cabang.
-3. **Admin Cabang:** Mengelola data hanya pada cabang yang ditugaskan.
-4. **Teknisi (Technician):** Melihat daftar komplain yang ditugaskan, mencatat waktu mulai/selesai kerja, dan mengunggah foto bukti perbaikan.
-5. **Penyewa (Tenant):** Melihat tagihan, mengunggah bukti bayar, melaporkan komplain kerusakan, dan mengunduh invoice PDF mereka sendiri.
+1. **Developer:** Akses sistem level rendah (Super Admin).
+2. **Owner:** Pemilik bisnis dengan akses penuh ke seluruh cabang dan laporan finansial.
+3. **Admin Cabang:** Pengelola operasional harian yang terbatas pada cabang tugasnya.
+4. **Teknisi (Technician):** Fokus pada penanganan komplain, dokumentasi foto (sebelum/sesudah), dan pelaporan biaya perbaikan.
+5. **Penyewa (Tenant):** Akses mandiri untuk melihat tagihan, mengunduh invoice PDF, mengunggah bukti bayar, dan melaporkan keluhan.
 
 ## Persyaratan Sistem
 
 - PHP >= 8.2
+- MySQL >= 8.0
 - Composer
 - Node.js & NPM
-- MySQL >= 8.0
 
-## Instalasi Lokal
+## Instruksi Instalasi
 
-1. **Clone repositori:**
+1. **Clone Repositori:**
    ```bash
    git clone <repository-url>
    cd <repository-name>
    ```
 
-2. **Instal dependensi PHP:**
+2. **Instal Dependensi:**
    ```bash
    composer install
+   npm install && npm run build
    ```
 
 3. **Konfigurasi Environment:**
@@ -69,83 +53,52 @@ php artisan db:seed --class=RolePermissionSeeder
    cp .env.example .env
    php artisan key:generate
    ```
-   *Pastikan konfigurasi `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` sesuai dengan server MySQL lokal Anda.*
+   *Edit file `.env` dan atur koneksi database MySQL Anda.*
 
-4. **Persiapan Database:**
-   Buat database baru di MySQL (misal: `kost_db`), lalu jalankan:
+4. **Inisialisasi Database & Keamanan:**
    ```bash
-   php artisan migrate --seed
+   php artisan migrate
+   php artisan shield:generate --all --panel=admin
+   php artisan db:seed --class=RolePermissionSeeder
    ```
 
-5. **Instal dependensi Frontend:**
-   ```bash
-   npm install
-   npm run dev
-   ```
-
-6. **Akses Aplikasi:**
-   - Frontend: `http://localhost:8000`
-   - Admin Panel: `http://localhost:8000/admin`
-   - Akun Default:
-     - Developer: `dev@admin.com` / `password`
-     - Owner: `owner@admin.com` / `password`
-
-## Instalasi di Server (Produksi)
-
-1. **Upload file ke server** (via Git atau FTP).
-2. **Jalankan perintah instalasi** seperti di lokal (tanpa `--seed` jika tidak ingin data dummy).
-3. **Konfigurasi Nginx/Apache** untuk mengarah ke direktori `public/`.
-4. **Optimasi Aplikasi:**
-   ```bash
-   composer install --optimize-autoloader --no-dev
-   php artisan config:cache
-   php artisan route:cache
-   php artisan view:cache
-   ```
-5. **Setup Cron Job untuk Tagihan Otomatis:**
-   Tambahkan baris berikut di crontab server Anda:
-   ```bash
-   * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
-   ```
-   *Catatan: Pastikan untuk mendaftarkan command harian di `routes/console.php`.*
+5. **Akses Admin:**
+   - URL: `http://localhost:8000/admin`
+   - Default: `dev@admin.com` / `password`
 
 ## Alur Kerja Utama
 
-### 1. Pendaftaran & Sewa Baru
-- Admin membuat data **Penyewa**.
-- Admin membuat data **Sewa (Lease)**, menentukan kamar, jumlah deposit, dan layanan tambahan (Wifi, dll).
-- **Sistem Otomatis:** Saat Sewa dibuat, status kamar berubah menjadi `Terisi` dan **Invoice Pertama** terbit mencakup biaya sewa bulan pertama, deposit, dan layanan yang dipilih.
+### 1. Setup Properti (Admin/Owner)
+- Daftarkan **Cabang** dan atur kebijakan denda.
+- Buat **Kategori Komplain**, **Kategori Pengeluaran**, dan **Metode Pembayaran**.
+- Input **Aset** (AC, Kasur, dll) dan daftarkan **Kamar**.
 
-### 2. Pembayaran & Invoice
-- Penyewa melihat rincian tagihan dan mengunduh **Invoice PDF**.
-- Penyewa mengunggah bukti transfer via dashboard.
-- Admin memverifikasi pembayaran. Status Invoice berubah menjadi `Lunas` setelah diverifikasi.
+### 2. Siklus Sewa
+- **Sewa Baru:** Admin membuat data Sewa. Sistem otomatis menerbitkan Invoice pertama (Sewa + Deposit) dan mengubah status kamar menjadi `Terisi`.
+- **Penagihan Bulanan:** Sistem (via Scheduler) menerbitkan invoice otomatis setiap bulan.
+- **Pembayaran:** Penyewa melihat instruksi bayar di PDF, membayar, dan unggah bukti. Admin memverifikasi bukti bayar tersebut.
 
-### 3. Penagihan Bulanan & Denda
-- Sistem menjalankan `kost:generate-invoices` setiap hari untuk mengecek siapa yang masuk tanggal tagihan.
-- Sistem menjalankan `kost:mark-overdue` untuk menandai tagihan terlambat dan **menerapkan denda** sesuai konfigurasi cabang (Flat atau akumulasi Harian).
+### 3. Operasional & Pemeliharaan
+- **Komplain:** Penyewa melapor -> Admin menugaskan Teknisi -> Teknisi bekerja (Foto Before/After) -> Teknisi melapor biaya.
+- **Otomatisasi Biaya:** Jika perbaikan disebabkan penyewa, biaya otomatis dikaitkan ke data sewa untuk dipotong dari deposit saat check-out. Selain itu, setiap biaya perbaikan otomatis tercatat di modul Pengeluaran.
 
-### 4. Modul Komplain & Perbaikan
-- **Penyewa** melaporkan kerusakan melalui menu Komplain dan mengunggah foto awal.
-- **Admin** menugaskan laporan tersebut ke **Teknisi**.
-- **Teknisi** menekan tombol "Mulai Kerja" dan setelah selesai menekan "Selesaikan" sambil mengunggah foto hasil perbaikan serta rincian biaya.
-- **Biaya Perbaikan:** Jika ditandai sebagai tanggung jawab penyewa, biaya ini akan otomatis terkumpul di data sewa.
+### 4. Penutupan Sewa (Check-out)
+- Admin menjalankan proses **Check-out**.
+- Sistem menghitung pengembalian deposit: `Sisa = Deposit - Hutang Tagihan - Biaya Perbaikan`.
+- Kamar otomatis kembali `Tersedia`.
 
-### 5. Proses Check-out
-- Saat penyewa akan keluar, Admin menggunakan tombol **Check-out** di menu Sewa.
-- Sistem menghitung sisa deposit yang harus dikembalikan secara akurat:
-  - `Sisa Deposit = (Deposit Awal) - (Tagihan Belum Lunas) - (Biaya Perbaikan yang dibebankan ke penyewa)`.
-- Status kamar otomatis kembali menjadi `Tersedia`.
+## Pemeliharaan Sistem
 
-## Perintah Khusus
-- Generate tagihan bulanan secara manual:
-  ```bash
-  php artisan kost:generate-invoices
-  ```
-- Tandai tagihan terlambat & hitung denda secara manual:
-  ```bash
-  php artisan kost:mark-overdue
-  ```
+### Scheduler (Sangat Penting)
+Agar tagihan otomatis dan sistem denda berjalan, aktifkan cron job di server Anda:
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### Perintah Manual
+- Generate tagihan: `php artisan kost:generate-invoices`
+- Proses denda: `php artisan kost:mark-overdue`
+- Update Izin Akses: `php artisan shield:generate --all --panel=admin`
 
 ---
-Dibuat dengan ❤️ oleh Jules.
+Dibuat dengan ❤️ untuk operasional Kost yang lebih profesional.
