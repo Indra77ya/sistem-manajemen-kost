@@ -126,13 +126,13 @@ class PaymentResource extends Resource
                     ->label('Verifikasi')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (Payment $record) => $record->status === 'pending' && (Auth::user()->role === 'owner' || Auth::user()->role === 'admin' || Auth::user()->role === 'developer'))
+                    ->visible(fn (Payment $record) => $record->status === 'pending' && (Auth::user()->hasAnyRole(['super_admin', 'owner', 'admin_cabang'])))
                     ->action(fn (Payment $record) => $record->update(['status' => 'verified'])),
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (Payment $record) => $record->status === 'pending' && (Auth::user()->role === 'owner' || Auth::user()->role === 'admin' || Auth::user()->role === 'developer'))
+                    ->visible(fn (Payment $record) => $record->status === 'pending' && (Auth::user()->hasAnyRole(['super_admin', 'owner', 'admin_cabang'])))
                     ->action(fn (Payment $record) => $record->update(['status' => 'rejected'])),
                 Tables\Actions\EditAction::make(),
             ])

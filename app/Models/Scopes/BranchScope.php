@@ -21,16 +21,26 @@ class BranchScope implements Scope
         if (Auth::hasUser()) {
             $user = Auth::user();
 
-            // Developer and Owner can see everything
-            if ($user->role === User::ROLE_DEVELOPER || $user->role === User::ROLE_OWNER) {
+            // Super Admin can see everything
+            if ($user->hasRole('super_admin')) {
+                return;
+            }
+
+            // Owner can also see everything across branches
+            if ($user->hasRole('owner')) {
                 return;
             }
 
             // Admin can only see data from branches they are assigned to
-            if ($user->role === User::ROLE_ADMIN) {
+            if ($user->hasRole('admin_cabang')) {
                 $branchIds = $this->getBranchIds($user);
 
-                if ($model instanceof \App\Models\Branch) {
+                if ($model instanceof \App\Models\Announcement) {
+                    $builder->where(function ($query) use ($branchIds) {
+                        $query->whereIn('branch_id', $branchIds)
+                              ->orWhereNull('branch_id');
+                    });
+                } elseif ($model instanceof \App\Models\Branch) {
                     $builder->whereIn($model->getTable() . '.id', $branchIds);
                 } elseif ($model instanceof \App\Models\User) {
                     $builder->where(function ($query) use ($branchIds, $user) {
@@ -43,11 +53,35 @@ class BranchScope implements Scope
                 }
             }
 
+            // Technician can only see assigned maintenance requests
+            if ($user->hasRole('technician')) {
+                if ($model instanceof \App\Models\MaintenanceRequest) {
+                    $builder->where('technician_id', $user->id);
+                } else {
+                    // Technician can see branches they are assigned to (if any) or just block other models if not needed
+                    // For now, let's treat them like admin for branch visibility if assigned
+                    $branchIds = $this->getBranchIds($user);
+                    if ($model instanceof \App\Models\Branch) {
+                        $builder->whereIn($model->getTable() . '.id', $branchIds);
+                    } elseif ($model instanceof \App\Models\User) {
+                        $builder->where($model->getTable() . '.id', $user->id);
+                    } else {
+                        $builder->whereIn($model->getTable() . '.branch_id', $branchIds);
+                    }
+                }
+            }
+
             // Tenant can only see their own data
-            if ($user->role === User::ROLE_TENANT) {
-                if ($model instanceof \App\Models\Lease ||
+            if ($user->hasRole('tenant')) {
+                if ($model instanceof \App\Models\Announcement) {
+                    $branchIds = $this->getBranchIds($user);
+                    $builder->where(function ($query) use ($branchIds) {
+                        $query->whereIn('branch_id', $branchIds)
+                              ->orWhereNull('branch_id');
+                    });
+                } elseif ($model instanceof \App\Models\Lease ||
                     $model instanceof \App\Models\MaintenanceRequest) {
-                    $builder->where('user_id', $user->id);
+                    $builder->where($model->getTable() . '.user_id', $user->id);
                 } elseif ($model instanceof \App\Models\Invoice) {
                     $builder->whereHas('lease', function ($query) use ($user) {
                         $query->where('user_id', $user->id);

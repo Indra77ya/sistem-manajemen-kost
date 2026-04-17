@@ -41,14 +41,12 @@ class UserResource extends Resource
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create'),
-                Forms\Components\Select::make('role')
-                    ->options([
-                        'developer' => 'Developer',
-                        'owner' => 'Owner',
-                        'admin' => 'Admin Cabang',
-                        'tenant' => 'Penyewa',
-                    ])
-                    ->required(),
+                Forms\Components\Select::make('roles')
+                    ->label('Role')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 
@@ -61,20 +59,10 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('role')
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Role')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'developer' => 'danger',
-                        'owner' => 'warning',
-                        'admin' => 'info',
-                        'tenant' => 'success',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'developer' => 'Developer',
-                        'owner' => 'Owner',
-                        'admin' => 'Admin Cabang',
-                        'tenant' => 'Penyewa',
-                    }),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat pada')
                     ->dateTime()

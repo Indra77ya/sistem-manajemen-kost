@@ -69,6 +69,24 @@
             </span>
         </div>
 
+        <div style="margin-top: 30px; padding: 15px; border: 1px dashed #ccc; background-color: #fafafa;">
+            <strong>Instruksi Pembayaran:</strong>
+            <p style="font-size: 12px; margin-bottom: 5px;">Silakan melakukan pembayaran melalui salah satu metode berikut:</p>
+            <table style="border: none; font-size: 12px;">
+                @foreach(\App\Models\PaymentMethod::where('is_active', true)->get() as $method)
+                <tr style="border: none;">
+                    <td style="border: none; padding: 2px 0; width: 120px;"><strong>{{ $method->name }}</strong></td>
+                    <td style="border: none; padding: 2px 0;">: {{ $method->account_number }} (a.n. {{ $method->account_holder }})</td>
+                </tr>
+                @endforeach
+            </table>
+            @if(\App\Models\PaymentMethod::where('is_active', true)->whereNotNull('description')->exists())
+                <p style="font-size: 11px; margin-top: 5px; color: #555;">
+                    * {{ \App\Models\PaymentMethod::where('is_active', true)->whereNotNull('description')->first()->description }}
+                </p>
+            @endif
+        </div>
+
         <div class="footer">
             <p>* Harap simpan bukti pembayaran ini.<br>
             * Jika ada pertanyaan, hubungi pengelola cabang terkait.</p>

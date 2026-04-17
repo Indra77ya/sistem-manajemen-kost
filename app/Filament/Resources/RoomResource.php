@@ -29,37 +29,51 @@ class RoomResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('branch_id')
-                    ->relationship('branch', 'name')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\TextInput::make('number')
-                    ->label('Nomor Kamar')
-                    ->required(),
-                Forms\Components\TextInput::make('type')
-                    ->label('Tipe Kamar'),
-                Forms\Components\TextInput::make('price')
-                    ->label('Harga')
-                    ->required()
-                    ->numeric()
-                    ->prefix('Rp'),
-                Forms\Components\TextInput::make('capacity')
-                    ->label('Kapasitas')
-                    ->required()
-                    ->numeric()
-                    ->default(1),
-                Forms\Components\Textarea::make('description')
-                    ->label('Deskripsi')
-                    ->columnSpanFull(),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'available' => 'Tersedia',
-                        'occupied' => 'Terisi',
-                        'maintenance' => 'Perbaikan',
-                    ])
-                    ->required()
-                    ->default('available'),
+                Forms\Components\Section::make('Informasi Kamar')
+                    ->schema([
+                        Forms\Components\Select::make('branch_id')
+                            ->relationship('branch', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\TextInput::make('number')
+                            ->label('Nomor Kamar')
+                            ->required(),
+                        Forms\Components\TextInput::make('type')
+                            ->label('Tipe Kamar'),
+                        Forms\Components\TextInput::make('price')
+                            ->label('Harga')
+                            ->required()
+                            ->numeric()
+                            ->prefix('Rp'),
+                        Forms\Components\TextInput::make('capacity')
+                            ->label('Kapasitas')
+                            ->required()
+                            ->numeric()
+                            ->default(1),
+                        Forms\Components\Select::make('status')
+                            ->options([
+                                'available' => 'Tersedia',
+                                'occupied' => 'Terisi',
+                                'maintenance' => 'Perbaikan',
+                            ])
+                            ->required()
+                            ->default('available'),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Deskripsi')
+                            ->columnSpanFull(),
+                    ])->columns(3),
+
+                Forms\Components\Section::make('Galeri Foto')
+                    ->schema([
+                        Forms\Components\FileUpload::make('gallery')
+                            ->label('Foto Kamar')
+                            ->image()
+                            ->multiple()
+                            ->directory('room-gallery')
+                            ->reorderable()
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -121,7 +135,8 @@ class RoomResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ServicesRelationManager::class,
+            RelationManagers\InventoriesRelationManager::class,
         ];
     }
 

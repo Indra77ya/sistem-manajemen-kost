@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Spatie\Permission\Traits\HasRoles;
 
 use App\Models\Scopes\HideDeveloperScope;
 use App\Models\Scopes\BranchScope;
@@ -18,11 +19,12 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     const ROLE_DEVELOPER = 'developer';
     const ROLE_OWNER = 'owner';
     const ROLE_ADMIN = 'admin';
+    const ROLE_TECHNICIAN = 'technician';
     const ROLE_TENANT = 'tenant';
 
     /**
@@ -72,21 +74,21 @@ class User extends Authenticatable implements FilamentUser
 
     public function isDeveloper(): bool
     {
-        return $this->role === self::ROLE_DEVELOPER;
+        return $this->hasRole('super_admin');
     }
 
     public function isOwner(): bool
     {
-        return $this->role === self::ROLE_OWNER;
+        return $this->hasRole('owner');
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->hasRole('admin_cabang');
     }
 
     public function isTenant(): bool
     {
-        return $this->role === self::ROLE_TENANT;
+        return $this->hasRole('tenant');
     }
 }
