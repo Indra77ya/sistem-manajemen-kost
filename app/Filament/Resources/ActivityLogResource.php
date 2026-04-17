@@ -71,5 +71,8 @@ class ActivityLogResource extends Resource
         ];
     }
 
-    public static function canCreate(): bool => false;
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 }

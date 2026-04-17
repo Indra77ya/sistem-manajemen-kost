@@ -20,7 +20,18 @@ class ActivityPolicy
         return $user->hasAnyRole(['super_admin', 'owner']);
     }
 
-    public function create(User $user): bool => false;
-    public function update(User $user, Activity $activity): bool => false;
-    public function delete(User $user, Activity $activity): bool => false;
+    public function create(User $user): bool
+    {
+        return false;
+    }
+
+    public function update(User $user, Activity $activity): bool
+    {
+        return false;
+    }
+
+    public function delete(User $user, Activity $activity): bool
+    {
+        return false;
+    }
 }
