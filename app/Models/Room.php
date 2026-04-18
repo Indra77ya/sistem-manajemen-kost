@@ -38,6 +38,11 @@ class Room extends Model
         return $this->hasMany(Lease::class);
     }
 
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
     public function inventories()
     {
         return $this->hasMany(Inventory::class);

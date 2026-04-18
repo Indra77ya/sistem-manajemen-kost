@@ -67,6 +67,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->belongsToMany(Branch::class);
     }
 
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true; // Simple for now, can be restricted later

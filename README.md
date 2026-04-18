@@ -7,6 +7,7 @@ Aplikasi manajemen kost berbasis web untuk pengelolaan multi-cabang yang profesi
 - **Multi-Cabang:** Isolasi data antar cabang untuk Admin Cabang dengan pengawasan penuh dari Owner.
 - **Manajemen Kamar:** Pemantauan status kamar (Tersedia, Terisi, Perbaikan), lengkap dengan visualisasi okupansi.
 - **Manajemen Sewa & Deposit:** Pengelolaan kontrak sewa terintegrasi dengan sistem uang jaminan (deposit).
+- **Sistem Reservasi (Booking):** Alur pemesanan kamar oleh calon penyewa dengan sistem uang muka (DP) yang dapat dikonversi menjadi deposit saat check-in, lengkap dengan pembatalan otomatis jika melewati batas waktu.
 - **Master Data Layanan & Aset:**
     - **Layanan:** Biaya tambahan (Wifi, Laundry, dll) yang fleksibel per kamar.
     - **Aset (Inventaris):** Katalog barang terpusat dan pemantauan inventaris detail di tiap kamar lengkap dengan galeri foto.
@@ -98,6 +99,7 @@ Agar tagihan otomatis dan sistem denda berjalan, aktifkan cron job di server And
 ### Perintah Manual
 - Generate tagihan: `php artisan kost:generate-invoices`
 - Proses denda: `php artisan kost:mark-overdue`
+- Bersihkan booking kadaluarsa: `php artisan kost:cancel-expired-bookings`
 - Update Izin Akses: `php artisan shield:generate --all --panel=admin`
 
 ---
