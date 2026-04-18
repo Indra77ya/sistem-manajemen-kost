@@ -15,6 +15,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/booking-success/{booking}', [BookingController::class, 'success'])->name('booking.success');
 });
 
+Route::get('/b/{token}', [BookingController::class, 'invitation'])->name('booking.invitation');
+Route::post('/b/{token}', [BookingController::class, 'storeInvitation'])->name('booking.invitation.store');
+
 Route::get('/invoice/{invoice}/download', function (Invoice $invoice) {
     // Basic authorization check
     if (!Auth::check()) {

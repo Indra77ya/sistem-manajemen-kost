@@ -101,6 +101,8 @@ class BranchScope implements Scope
                     $builder->where(function ($query) use ($user) {
                         $query->whereHas('leases', function ($q) use ($user) {
                             $q->where('user_id', $user->id);
+                        })->orWhereHas('bookings', function ($q) use ($user) {
+                            $q->where('user_id', $user->id);
                         })->orWhere('status', 'available');
                     });
                 }

@@ -38,7 +38,7 @@ class Room extends Model
         return $this->hasMany(Lease::class);
     }
 
-    public function bookings(): HasMany
+    public function bookings(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Booking::class);
     }
