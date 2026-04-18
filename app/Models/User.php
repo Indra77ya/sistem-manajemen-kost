@@ -67,7 +67,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->belongsToMany(Branch::class);
     }
 
-    public function bookings(): HasMany
+    public function bookings(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Booking::class);
     }
