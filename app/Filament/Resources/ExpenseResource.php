@@ -53,8 +53,15 @@ class ExpenseResource extends Resource
                     ->label('Lampiran (Nota/Kuitansi)')
                     ->directory('expenses')
                     ->image(),
+                Forms\Components\Toggle::make('is_tenant_chargeable')
+                    ->label('Dibebankan ke Penyewa?')
+                    ->default(false),
+                Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi')
+                    ->maxLength(65535)
+                    ->columnSpanFull(),
                 Forms\Components\Textarea::make('notes')
-                    ->label('Catatan')
+                    ->label('Catatan Internal')
                     ->maxLength(65535)
                     ->columnSpanFull(),
                 Forms\Components\Select::make('maintenance_request_id')
@@ -87,6 +94,10 @@ class ExpenseResource extends Resource
                 Tables\Columns\TextColumn::make('date')
                     ->label('Tanggal')
                     ->date()
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('is_tenant_chargeable')
+                    ->label('Charge Penyewa')
+                    ->boolean()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('attachment')
                     ->label('Nota')

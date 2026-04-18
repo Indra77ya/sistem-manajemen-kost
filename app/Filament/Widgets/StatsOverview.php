@@ -36,6 +36,10 @@ class StatsOverview extends BaseWidget
                 ->description('Total pengeluaran operasional')
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('danger'),
+            Stat::make('Booking Menunggu', \App\Models\Booking::where('status', 'pending')->count())
+                ->description('Perlu konfirmasi pembayaran')
+                ->descriptionIcon('heroicon-m-clock')
+                ->color('warning'),
         ];
     }
 }

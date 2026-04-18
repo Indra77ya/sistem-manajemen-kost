@@ -254,9 +254,10 @@ class DummyDataSeeder extends Seeder
             'branch_id' => $branch1->id,
             'expense_category_id' => $expCat3->id,
             'maintenance_request_id' => $req->id,
+            'title' => 'Service AC Kamar 101',
             'amount' => 150000,
             'date' => Carbon::now()->subDays(2),
-            'description' => 'Service AC Kamar 101 - Isi Freon',
+            'description' => 'Isi Freon',
             'is_tenant_chargeable' => false
         ]);
     }

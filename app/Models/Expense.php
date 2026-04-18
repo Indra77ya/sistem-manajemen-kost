@@ -17,6 +17,8 @@ class Expense extends Model
         'title',
         'amount',
         'date',
+        'description',
+        'is_tenant_chargeable',
         'notes',
         'attachment',
     ];
