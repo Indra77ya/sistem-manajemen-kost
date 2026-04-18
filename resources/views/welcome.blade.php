@@ -57,7 +57,7 @@
                             <p>Kapasitas: {{ $room->capacity }} Orang</p>
                             <p class="mt-2">{{ Str::limit($room->description, 100) }}</p>
                         </div>
-                        <a href="/admin/login" class="mt-6 block text-center bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300">Pesan Sekarang</a>
+                        <a href="{{ route('booking.create', $room) }}" class="mt-6 block text-center bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300">Pesan Sekarang</a>
                     </div>
                 </div>
             @empty

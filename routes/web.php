@@ -1,12 +1,22 @@
 <?php
 
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\BookingController;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [RoomController::class, 'index']);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/booking/{room}', [BookingController::class, 'create'])->name('booking.create');
+    Route::post('/booking/{room}', [BookingController::class, 'store'])->name('booking.store');
+    Route::get('/booking-success/{booking}', [BookingController::class, 'success'])->name('booking.success');
+});
+
+Route::get('/b/{token}', [BookingController::class, 'invitation'])->name('booking.invitation');
+Route::post('/b/{token}', [BookingController::class, 'storeInvitation'])->name('booking.invitation.store');
 
 Route::get('/invoice/{invoice}/download', function (Invoice $invoice) {
     // Basic authorization check

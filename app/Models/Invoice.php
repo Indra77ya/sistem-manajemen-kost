@@ -43,4 +43,11 @@ class Invoice extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function updateTotal(): void
+    {
+        $this->update([
+            'amount' => $this->items()->sum('amount')
+        ]);
+    }
 }

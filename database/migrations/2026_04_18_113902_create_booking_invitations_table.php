@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventories', function (Blueprint $table) {
+        Schema::create('booking_invitations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_id')->constrained()->onDelete('cascade');
-            $table->string('name')->nullable();
-            $table->string('condition')->default('good'); // good, fair, poor, broken
-            $table->integer('quantity')->default(1);
-            $table->text('description')->nullable();
+            $table->string('token')->unique();
+            $table->timestamp('expires_at');
+            $table->timestamp('used_at')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventories');
+        Schema::dropIfExists('booking_invitations');
     }
 };

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\RoomResource\Pages;
 use App\Filament\Resources\RoomResource\RelationManagers;
 use App\Models\Room;
+use App\Models\BookingInvitation;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -56,6 +57,7 @@ class RoomResource extends Resource
                                 'available' => 'Tersedia',
                                 'occupied' => 'Terisi',
                                 'maintenance' => 'Perbaikan',
+                'reserved' => 'Dipesan',
                             ])
                             ->required()
                             ->default('available'),
@@ -109,6 +111,7 @@ class RoomResource extends Resource
                         'available' => 'Tersedia',
                         'occupied' => 'Terisi',
                         'maintenance' => 'Perbaikan',
+                        'reserved' => 'Dipesan',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -123,6 +126,29 @@ class RoomResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('generate_link')
+                    ->label('Bagi Link')
+                    ->icon('heroicon-o-share')
+                    ->color('info')
+                    ->hidden(fn (Room $record) => $record->status !== 'available')
+                    ->action(function (Room $record) {
+                        $invitation = BookingInvitation::generateForRoom($record);
+                        $record->update(['status' => 'reserved']);
+
+                        $url = route('booking.invitation', $invitation->token);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Link Booking Berhasil Dibuat')
+                            ->body("Salin link ini: " . $url)
+                            ->success()
+                            ->persistent()
+                            ->actions([
+                                \Filament\Notifications\Actions\Action::make('copy')
+                                    ->label('Salin Link')
+                                    ->url("javascript:navigator.clipboard.writeText('$url')"),
+                            ])
+                            ->send();
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

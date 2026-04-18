@@ -80,6 +80,7 @@ class BranchScope implements Scope
                               ->orWhereNull('branch_id');
                     });
                 } elseif ($model instanceof \App\Models\Lease ||
+                    $model instanceof \App\Models\Booking ||
                     $model instanceof \App\Models\MaintenanceRequest) {
                     $builder->where($model->getTable() . '.user_id', $user->id);
                 } elseif ($model instanceof \App\Models\Invoice) {
@@ -97,8 +98,12 @@ class BranchScope implements Scope
                         $query->where('users.id', $user->id);
                     });
                 } elseif ($model instanceof \App\Models\Room) {
-                    $builder->whereHas('leases', function ($query) use ($user) {
-                        $query->where('user_id', $user->id);
+                    $builder->where(function ($query) use ($user) {
+                        $query->whereHas('leases', function ($q) use ($user) {
+                            $q->where('user_id', $user->id);
+                        })->orWhereHas('bookings', function ($q) use ($user) {
+                            $q->where('user_id', $user->id);
+                        })->orWhere('status', 'available');
                     });
                 }
             }
