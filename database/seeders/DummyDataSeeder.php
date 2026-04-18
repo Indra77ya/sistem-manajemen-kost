@@ -174,8 +174,8 @@ class DummyDataSeeder extends Seeder
             'description' => 'Lantai 2, Balkon'
         ]);
 
-        Inventory::create(['room_id' => $room101->id, 'asset_id' => $assetAC->id, 'quantity' => 1, 'condition' => 'good']);
-        Inventory::create(['room_id' => $room101->id, 'asset_id' => $assetBed->id, 'quantity' => 1, 'condition' => 'good']);
+        Inventory::create(['room_id' => $room101->id, 'asset_id' => $assetAC->id, 'name' => $assetAC->name, 'quantity' => 1, 'condition' => 'good']);
+        Inventory::create(['room_id' => $room101->id, 'asset_id' => $assetBed->id, 'name' => $assetBed->name, 'quantity' => 1, 'condition' => 'good']);
 
         // 6. Leases & Invoices
         $lease1 = Lease::create([

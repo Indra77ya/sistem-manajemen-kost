@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_id')->constrained()->onDelete('cascade');
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('condition')->default('good'); // good, fair, poor, broken
             $table->integer('quantity')->default(1);
             $table->text('description')->nullable();
